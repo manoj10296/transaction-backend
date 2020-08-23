@@ -11,6 +11,10 @@ var transactionSchema = new mongoose.Schema({
       trim: true,
       required: true
     },
+    runningBalance: {
+      type: Number,
+      default: 0
+    },
     description: {
       type: String
     }

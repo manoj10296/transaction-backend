@@ -1,8 +1,15 @@
 const Transaction  = require('../models/transaction')
 
-exports.createTransaction = (req, res) => {
-  console.log(req)
-  const transaction = new Transaction(req.body);
+exports.createTransaction = async (req, res) => {
+ let obj ={...req.body}
+  const resp =  await Transaction.findOne({}, {}, { sort: { 'createdAt' : -1 } });
+  if(resp) {
+    obj.runningBalance = obj.type === 'credit' ? resp.runningBalance + Number(obj.amount) : resp.runningBalance - Number(obj.amount) 
+  } else {
+    obj.runningBalance = obj.type === 'credit' ? 0 + Number(obj.amount) : 0 - Number(obj.amount)
+  }
+  
+  const transaction = new Transaction(obj);
   transaction.save((err, transaction) => {
     if (err) {
       return res.status(400).json({
@@ -21,7 +28,6 @@ exports.getAllTransactions = (req, res) => {
         error: "hello",
       });
     }
-    console.log(res)
     res.json(transaction);
   });
 };
